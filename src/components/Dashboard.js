@@ -9,7 +9,7 @@ const initState = {
     answers:[question[0].answers[0], question[0].answers[1], question[0].answers[2], question[0].answers[3] ],
     number: 1,
     total: question.length,
-    showButton: false,
+    showButton: 'contents',
     questionAnswered: false,
     score: 0,
     displayPopup: 'none',
@@ -43,7 +43,7 @@ const Dashboard = ()=> {
             tempState.answers = [question[number].answers[0], question[number].answers[1], question[number].answers[2], question[number].answers[3] ];
             tempState.correct = question[number].correct;
             tempState.number = state.number + 1;
-            tempState.showButton = false;
+            tempState.showButton ='contents';
             tempState.questionAnswered = false;
             tempState.classNames = ['', '', '', ''];
             
@@ -67,7 +67,7 @@ const Dashboard = ()=> {
                 updatedClassNames[answer-1] = 'wrong';
             }
             tempState.classNames = updatedClassNames;
-            tempState.showButton = true;
+            tempState.showButton = 'block';
             tempState.questionAnswered = true;
             setState(tempState);
         }
@@ -103,7 +103,7 @@ const Dashboard = ()=> {
             <div className="row">
                 <div className="col-lg-12">
                     <div className="submit">
-                        {state.showButton ? <button className="fancy-btn" onClick={nextQuestion} >{state.number===state.total ? 'Finish quiz' : 'Next question'}</button> : null}
+                        <button className="fancy-btn" style={{display: state.showButton}}  onClick={nextQuestion} >{state.number===state.total ? 'Finish quiz' : 'Next question'}</button>
                     </div>
                 </div>
             </div>
