@@ -1,130 +1,114 @@
-import React, { Component } from 'react';
+import React, {  useState } from 'react';
 import GetAnswers from './GetAnswers';
-import QuizStartPopup from './QuizStartPopup';
 import question from '../data/question';
+import QuizStartPopup from './QuizStartPopup';
 
+const initState = {
+    correct:question[0].correct,
+    question : question[0].question,
+    answers:[question[0].answers[0], question[0].answers[1], question[0].answers[2], question[0].answers[3] ],
+    number: 1,
+    total: question.length,
+    showButton: false,
+    questionAnswered: false,
+    score: 0,
+    displayPopup: 'none',
+    classNames: ['', '', '', '']
+}
 
+const initialize = {
+    game: 'start',
+    title: 'Welcome to Quizz',
+    text: 'React JS Multiple choice interview questions (MCQ) - Test your React JS knowledge' ,
+    buttonText: 'Start the quiz',
+};
 
-class Dashboard extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            number: 0,
-            total: question.length,
-            showButton: false,
-            questionAnswered: false,
-            score: 0,
-            displayPopup: 'flex',
-            classNames: ['', '', '', '']
-        }
-        this.nextQuestion = this.nextQuestion.bind(this);
-        this.handleShowButton = this.handleShowButton.bind(this);
-        this.handleStartQuiz = this.handleStartQuiz.bind(this);
-        this.handleIncreaseScore = this.handleIncreaseScore.bind(this);
-        this.checkAnswer = this.checkAnswer.bind(this);
-
-    }
-
-    pushData(number) {
-        this.setState({
-            question: question[number].question,
-            answers: [question[number].answers[0], question[number].answers[1], question[number].answers[2], question[number].answers[3] ],
-            correct: question[number].correct,
-            number: this.state.number + 1
-        });
-    }
-
-    componentWillMount() {
-        this.pushData(this.state.number);
-    }
-
-    nextQuestion() {
-
-        if(this.state.number === this.state.total){
-            this.setState({
-                displayPopup: 'flex'
-            });
-        } else {
-            this.pushData(this.state.number)
-            this.setState({
-                showButton: false,
-                questionAnswered: false,
-                classNames: ['', '', '', '']
-            });
-        }
-
-    }
-
-    handleShowButton() {
-        this.setState({
-            showButton: true,
-            questionAnswered: true
-        })
-    }
-
-    handleStartQuiz() {
-        this.setState({
-            displayPopup: 'none',
-            number: 1
-        });
-    }
-
-    handleIncreaseScore() {
-        this.setState({
-            score: this.state.score + 1
-        });
-    }
-
-
-    checkAnswer(e) {
+const Dashboard = ()=> {
     
-        if(!this.state.questionAnswered) {
+    const [state, setState ] = useState(initState);
+    const [popdata, setPopdata] = useState(initialize);
+    const nextQuestion = ()=>{
+        const { number, total } = state;
+        const tempState = {...state};
+        if(number === total){
+            tempState.displayPopup = 'flex';
+            const temppopdata = {...popdata};
+            temppopdata.game = 'end';
+            temppopdata.title = 'Congratulations!';
+            temppopdata.buttonText = 'Restart';
+            temppopdata.text =  'You have completed the quiz. <br /> You got: <strong>' + tempState.score + '</strong> out of <strong>' + tempState.total +'</strong> questions right.';
+            setPopdata(temppopdata);
+        } else {
+            tempState.question = question[number].question;
+            tempState.answers = [question[number].answers[0], question[number].answers[1], question[number].answers[2], question[number].answers[3] ];
+            tempState.correct = question[number].correct;
+            tempState.number = state.number + 1;
+            tempState.showButton = false;
+            tempState.questionAnswered = false;
+            tempState.classNames = ['', '', '', ''];
+            
+        }
+        setState(tempState);
+    }
+
+
+    const checkAnswer = (e)=>{
+        const tempState = {...state};
+        if(!state.questionAnswered) {
             let elem = e.currentTarget;
             let answer = Number(elem.dataset.id);
-            let updatedClassNames = this.state.classNames;
+            let updatedClassNames = state.classNames;
 
-            if(answer === this.state.correct){
+            if(answer === state.correct){
                 updatedClassNames[answer-1] = 'right';
-                this.handleIncreaseScore();
+                tempState.score  = tempState.score + 1;
             }
             else {
                 updatedClassNames[answer-1] = 'wrong';
             }
-            
-            this.setState({
-                classNames: updatedClassNames
-            })
-
-            this.handleShowButton();
+            tempState.classNames = updatedClassNames;
+            tempState.showButton = true;
+            tempState.questionAnswered = true;
+            setState(tempState);
         }
     }
 
-    render() {
-        return (
-            <div className="container">
-                 <QuizStartPopup style={{display: this.state.displayPopup}} score={this.state.score} total={this.state.total} startQuiz={this.handleStartQuiz} />
+    const popupHandle = ()=> {
+        if(popdata.game=== 'start'){
+            initState.classNames = ['', '', '', ''];
+            setState(initState);
+        }else{
+            const freshInitialize = { ...initialize};
+            setPopdata(freshInitialize);
+        }
+    }
 
-                <div className="row">
-                     <div className="col-lg-6" style={{ backgroundColor: '#0094da', marginTop:'15px', marginBottom:'15px'}}>
-                        <div className="question">
-                            <h4>Question {this.state.number}/{this.state.total}</h4>
-                            <p>{this.state.question}</p>
-                        </div>
-                    </div>
-                    <div className="col-lg-6 ">
-                    <GetAnswers  answers={this.state.answers} correct={this.state.correct} classNames={this.state.classNames}  checkAnswer={this.checkAnswer}/>
+
+    return (
+        <div className="container">
+            <QuizStartPopup style={{display: state.displayPopup}} popdata={popdata}  popupHandle={popupHandle} number = {state.number}/>
+
+            <div className="row">
+                    <div className="col-lg-6" style={{ backgroundColor: '#0094da', marginTop:'15px', marginBottom:'15px'}}>
+                    <div className="question">
+                        <h4>Question {state.number}/{state.total}</h4>
+                        <p>{state.question}</p>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-lg-12">
-                        <div className="submit">
-                            {this.state.showButton ? <button className="fancy-btn" onClick={this.nextQuestion} >{this.state.number===this.state.total ? 'Finish quiz' : 'Next question'}</button> : null}
-                        </div>
+                <div className="col-lg-6 ">
+                <GetAnswers  answers={state.answers} correct={state.correct} classNames={state.classNames}  checkAnswer={checkAnswer}/>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-lg-12">
+                    <div className="submit">
+                        {state.showButton ? <button className="fancy-btn" onClick={nextQuestion} >{state.number===state.total ? 'Finish quiz' : 'Next question'}</button> : null}
                     </div>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default Dashboard;
