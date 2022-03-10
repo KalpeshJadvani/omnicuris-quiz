@@ -1,4 +1,4 @@
-export default [
+ const question = [
     {
         question: 'Everything in React is a _____________ ',
         answers: ['Module', 'Component', 'Package', 'Class'],
@@ -51,3 +51,5 @@ export default [
         correct: 3
     }
 ]
+
+export default question;
