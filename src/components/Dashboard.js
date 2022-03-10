@@ -3,6 +3,17 @@ import GetAnswers from './GetAnswers';
 import question from '../data/question';
 import QuizStartPopup from './QuizStartPopup';
 
+
+const initialize = {
+    game: 'start',
+    title: 'Welcome to Quizz',
+    text: 'React JS Multiple choice interview questions (MCQ) - Test your React JS knowledge' ,
+    buttonText: 'Start the quiz',
+};
+
+const Dashboard = ()=> {
+    
+    
 const initState = {
     correct:question[0].correct,
     question : question[0].question,
@@ -15,16 +26,6 @@ const initState = {
     displayPopup: 'none',
     classNames: ['', '', '', '']
 }
-
-const initialize = {
-    game: 'start',
-    title: 'Welcome to Quizz',
-    text: 'React JS Multiple choice interview questions (MCQ) - Test your React JS knowledge' ,
-    buttonText: 'Start the quiz',
-};
-
-const Dashboard = ()=> {
-    
     const [state, setState ] = useState(initState);
     const [popdata, setPopdata] = useState(initialize);
     const nextQuestion = ()=>{
